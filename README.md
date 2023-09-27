@@ -35,12 +35,13 @@ Additional libraries used - [Material UI](https://mui.com/material-ui/), [Chart.
     }
 ```
 
-6. To run the program, navigate to the root directory and start the server
+6. To start the express server, navigate to the root directory and run:
 ```
 cd server
 npm start
 ```
-7. Start the client
+
+7. To start the client, navigate to the root directory and run:
 ```
 cd client
 npm start  
