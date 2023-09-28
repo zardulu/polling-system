@@ -1,5 +1,6 @@
 # polling-system
 Basic polling-system dashboard created using PERN stack.
+Video - https://www.dropbox.com/scl/fi/1scre194a4ky7hnpzzfe8/screen-capture.webm?rlkey=eu2qkrxww1p809vw8rh5yhvnf&dl=0
 
 Additional libraries used - [Material UI](https://mui.com/material-ui/), [Chart.js](https://www.chartjs.org/),  [knex.js](https://knexjs.org/), [date-fns](https://date-fns.org/)
 
