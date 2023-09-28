@@ -32,8 +32,8 @@ router.get('/counts', async (req, res) => {
     const counts = await db('votes')
       .where({ voting_choice })
       .select(db.raw('DATE(casted_at) as casted_at, count(id) as count'))
-      .groupBy('casted_at')
-      .orderBy('casted_at', 'asc');
+      .groupBy('casted_at');
+      
     res.json({ data: counts });
   } catch (err) {
     console.error(err);
@@ -45,14 +45,17 @@ router.get('/counts', async (req, res) => {
 router.get('/results', async (req, res) => {
   try {
     const results = await db('votes')
-      .count('id')
-      .groupBy('voting_choice');
+      .select(
+        db.raw('SUM(CASE WHEN voting_choice = true THEN 1 ELSE 0 END) as true_count'),
+        db.raw('SUM(CASE WHEN voting_choice = false THEN 1 ELSE 0 END) as false_count')
+      );
     res.json({ data: results });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'An error occurred while retrieving the vote results' });
   }
 });
+
 
 return router 
 }

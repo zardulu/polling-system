@@ -32,38 +32,49 @@ function TrendAnalysis() {
       try {
         const responseTrue = await axios.get('http://localhost:4000/api/counts?voting_choice=true'); // GET 'true' vote count
         const responseFalse = await axios.get('http://localhost:4000/api/counts?voting_choice=false'); // GET 'false' vote count
-        
-
+  
         if (responseTrue.data && responseTrue.data.data && responseFalse.data && responseFalse.data.data) {
-          const Labels = responseTrue.data.data.map((item) => {
+
+          const LabelsTrue = responseTrue.data.data.map((item) => {
             const date = new Date(item.casted_at);
             if (!isNaN(date.getTime())) {
               return format(date, 'yyyy-MM-dd'); // Format as 'YYYY-MM-DD'
             }
-            // Handle invalid date here
             return 'Invalid Date';
           });
-          
-          
+  
+          const LabelsFalse = responseFalse.data.data.map((item) => {
+            const date = new Date(item.casted_at);
+            if (!isNaN(date.getTime())) {
+              return format(date, 'yyyy-MM-dd'); // Format as 'YYYY-MM-DD'
+            }
+            return 'Invalid Date';
+          });
+  
+          const Labels = Array.from(new Set([...LabelsTrue, ...LabelsFalse])).sort();
+          console.log(Labels)
+  
+          const datasets = [
+            {
+              label: 'True',
+              data: responseTrue.data.data.map((item) => item.count),
+              backgroundColor: 'rgba(75,192,192,0.6)',
+            },
+            {
+              label: 'False',
+              data: responseFalse.data.data.map((item) => item.count),
+              backgroundColor: 'rgba(255,99,132,0.6)',
+            },
+          ];
+         
+  
           setLineData({
             labels: Labels,
-            datasets: [
-              {
-                label: 'True',
-                data: responseTrue.data.data.map((item) => item.count),
-                backgroundColor: 'rgba(75,192,192,0.6)',
-              },
-              {
-                label: 'False',
-                data: responseFalse.data.data.map((item) => item.count),
-                backgroundColor: 'rgba(255,99,132,0.6)',
-              },
-            ],
+            datasets: datasets,
             options: {
               scales: {
                 x: {
                   type: 'time',
-                    
                 },
               },
             },
@@ -75,30 +86,34 @@ function TrendAnalysis() {
     };
     fetchChartData();
   }, []);
+  
 
   // Bar Chart
-  useEffect(() => {
-    const fetchBarData = async () => {
-      try {
-        const response = await axios.get('http://localhost:4000/api/results');
-        if (response.data && response.data.data) {
-          setBarData({
-            labels: ['True', 'False'],
-            datasets: [
-              {
-                label: 'Votes',
-                data: response.data.data.map((item) => item.count),
-                backgroundColor: ['rgba(75,192,192,0.6)', 'rgba(255,99,132,0.6)'],
-              },
-            ],
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching bar chart data:', error);
+useEffect(() => {
+  const fetchBarData = async () => {
+    try {
+      const response = await axios.get('http://localhost:4000/api/results');
+      if (response.data && response.data.data) {
+        const data = response.data.data[0]; 
+        setBarData({
+          labels: ['True', 'False'],
+          datasets: [
+            {
+              label: 'Votes',
+              data: [data.true_count, data.false_count], // Use true_count and false_count from the response
+              backgroundColor: ['rgba(75,192,192,0.6)', 'rgba(255,99,132,0.6)'],
+            },
+          ],
+        });
       }
-    };
-    fetchBarData();
-  }, []);
+    } catch (error) {
+      console.error('Error fetching bar chart data:', error);
+    }
+  };
+  fetchBarData();
+}, []);
+
+
 
   return (
     <div>
