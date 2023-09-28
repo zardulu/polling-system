@@ -32,13 +32,19 @@ function TrendAnalysis() {
       try {
         const responseTrue = await axios.get('http://localhost:4000/api/counts?voting_choice=true'); // GET 'true' vote count
         const responseFalse = await axios.get('http://localhost:4000/api/counts?voting_choice=false'); // GET 'false' vote count
+        
 
         if (responseTrue.data && responseTrue.data.data && responseFalse.data && responseFalse.data.data) {
           const Labels = responseTrue.data.data.map((item) => {
-            const date = parseISO(item.casted_at) // Parse ISO format date
-            return date
+            const date = new Date(item.casted_at);
+            if (!isNaN(date.getTime())) {
+              return format(date, 'yyyy-MM-dd'); // Format as 'YYYY-MM-DD'
+            }
+            // Handle invalid date here
+            return 'Invalid Date';
           });
-
+          
+          
           setLineData({
             labels: Labels,
             datasets: [
@@ -56,7 +62,8 @@ function TrendAnalysis() {
             options: {
               scales: {
                 x: {
-                  type: 'time',  
+                  type: 'time',
+                    
                 },
               },
             },

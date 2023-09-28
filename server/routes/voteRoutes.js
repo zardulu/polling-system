@@ -31,8 +31,9 @@ router.get('/counts', async (req, res) => {
   try {
     const counts = await db('votes')
       .where({ voting_choice })
-      .count('id')
-      .groupBy('casted_at');
+      .select(db.raw('DATE(casted_at) as casted_at, count(id) as count'))
+      .groupBy('casted_at')
+      .orderBy('casted_at', 'asc');
     res.json({ data: counts });
   } catch (err) {
     console.error(err);
